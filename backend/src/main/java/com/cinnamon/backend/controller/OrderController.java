@@ -17,7 +17,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/place")
+    @PostMapping(value = "/place", consumes = "application/json", produces = "text/plain")
     public ResponseEntity<String> place(@RequestBody OrderRequest orderRequest) throws ExecutionException, InterruptedException {
         String orderId = orderService.placeOrder(orderRequest);
         return ResponseEntity.ok("Order placed with ID: " + orderId);

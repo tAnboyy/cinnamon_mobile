@@ -3,6 +3,7 @@ package com.cinnamon.backend.controller;
 import com.cinnamon.backend.model.MealPlanRequest;
 import com.cinnamon.backend.service.MealPlanService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +31,10 @@ public class MealPlanController {
     public ResponseEntity<String> scheduler() {
         // This would be triggered by a cron job to generate daily orders
         return ResponseEntity.ok("scheduler stub");
+    }
+
+    @GetMapping("/weekly")
+    public ResponseEntity<Object> weekly() throws ExecutionException, InterruptedException {
+        return ResponseEntity.ok(mealPlanService.getWeeklyMealPlan());
     }
 }
