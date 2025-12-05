@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("/api/plans")
+@RequestMapping(" ")
 public class MealPlanController {
 
     private final MealPlanService mealPlanService;
