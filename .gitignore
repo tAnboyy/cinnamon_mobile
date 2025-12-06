@@ -1,3 +1,9 @@
+# Global env files
+.env
+.env.*
+*.env
+*.env.*
+
 # Dependencies
 /admin-app/node_modules
 /customer-app/node_modules
@@ -18,3 +24,6 @@ yarn-error.log
 
 # OS files
 .DS_Store
+
+# Stripe secret
+/backend/src/main/resources/application.properties
