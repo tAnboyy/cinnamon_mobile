@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import { signInWithGoogle } from '../services/googleAuth';
+import { useGoogleSignIn, signInWithGoogleIdToken } from '../services/googleAuth';
 
 const AuthScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
+  const { request, response, promptAsync } = useGoogleSignIn();
 
   const handleAuth = () => {
     if (isLogin) {
@@ -33,6 +34,23 @@ const AuthScreen = () => {
     }
   };
 
+  useEffect(() => {
+    const run = async () => {
+      if (response?.type === 'success') {
+        const idToken = (response as any)?.authentication?.idToken || (response as any)?.params?.id_token;
+        if (idToken) {
+          try {
+            const user = await signInWithGoogleIdToken(idToken);
+            Alert.alert('Logged in!', `Welcome ${user.email ?? user.uid}`);
+          } catch (err: any) {
+            Alert.alert('Google Sign-In Error', err?.message ?? 'Unknown error');
+          }
+        }
+      }
+    };
+    run();
+  }, [response]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{isLogin ? 'Login' : 'Sign Up'}</Text>
@@ -56,17 +74,7 @@ const AuthScreen = () => {
       <Button title={isLogin ? 'Login' : 'Sign Up'} onPress={handleAuth} />
       <Button title={`Switch to ${isLogin ? 'Sign Up' : 'Login'}`} onPress={() => setIsLogin(!isLogin)} />
       <View style={{ height: 16 }} />
-      <Button
-        title="Continue with Google"
-        onPress={async () => {
-          try {
-            const res = await signInWithGoogle();
-            Alert.alert('Logged in!', `Welcome ${res.email ?? res.userId}`);
-          } catch (err: any) {
-            Alert.alert('Google Sign-In Error', err?.message ?? 'Unknown error');
-          }
-        }}
-      />
+      <Button title="Continue with Google" disabled={!request} onPress={() => promptAsync()} />
     </View>
   );
 };
