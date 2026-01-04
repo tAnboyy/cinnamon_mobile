@@ -30,7 +30,7 @@ public class PaymentController {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
-    @Value("${stripe.secret.key}")
+    // @Value("${stripe.secret.key}")
     private String secretKey;
 
     // Use the same Stripe API version across Mobile SDK and Ephemeral Key requests
@@ -40,13 +40,13 @@ public class PaymentController {
 
     @PostConstruct
     public void init() {
+        secretKey = System.getenv("STRIPE_SECRET_KEY");
+        if (secretKey == null) {
+            throw new IllegalStateException("STRIPE_SECRET_KEY environment variable is not set");
+        }
         Stripe.apiKey = secretKey;
         logger.info("[PaymentController] Stripe API initialized with key: {}... and API version: {}", 
                    secretKey.substring(0, Math.min(10, secretKey.length())), stripeApiVersion);
-    }
-
-    public PaymentController() {
-        Stripe.apiKey = secretKey;
     }
 
     /**
